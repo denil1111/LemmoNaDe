@@ -31,7 +31,7 @@ function ckPA(d,f,t,r,s,l,n) {
 
 // &I: Conjunction Introduction
 function ckCJI(d,f,t,r,s,l,n) {
-	var flag = '[ERROR applying '+gRul(r)+' to lines '+l.join(',')+']: '
+	var flag = '[ERROR applying '+gRul(r)+' to lines '+l.join(',')+']: ';
 	if(l.length!=2) {
 		throw flag+'Rule must be applied to two lines.';
 	}
@@ -49,7 +49,7 @@ function ckCJI(d,f,t,r,s,l,n) {
 
 // &E: Conjunction Elimination
 function ckCJE(d,f,t,r,s,l,n) {
-	var flag = '[ERROR applying '+gRul(r)+' to line '+l.join(',')+']: '
+	var flag = '[ERROR applying '+gRul(r)+' to line '+l.join(',')+']: ';
 	if(l.length!=1) {
 		throw flag+'Rule must be applied to one line.';
 	}
@@ -67,7 +67,7 @@ function ckCJE(d,f,t,r,s,l,n) {
 
 // vI: Disjunction Introduction
 function ckDJI(d,f,t,r,s,l,n) {
-	var flag = '[ERROR applying '+gRul(r)+' to line '+l.join(',')+']: '
+	var flag = '[ERROR applying '+gRul(r)+' to line '+l.join(',')+']: ';
 	if(l.length!=1) {
 		throw flag+'Rule must be applied to one line';
 	}
@@ -85,7 +85,7 @@ function ckDJI(d,f,t,r,s,l,n) {
 
 // vE: Disjunction Elimination
 function ckDJE(d,f,t,r,s,l,n) {
-	var flag = '[ERROR applying '+gRul(r)+' to lines '+l.join(',')+']: '
+	var flag = '[ERROR applying '+gRul(r)+' to lines '+l.join(',')+']: ';
 	if(l.length!=5) {
 		throw flag+'Rule must be applied to five lines.';
 	}
@@ -117,7 +117,7 @@ function ckDJE(d,f,t,r,s,l,n) {
 
 // >I: Conditional Introduction
 function ckCNI(d,f,t,r,s,l,n) {
-	var flag = '[ERROR applying '+gRul(r)+' to lines '+l.join(',')+']: '
+	var flag = '[ERROR applying '+gRul(r)+' to lines '+l.join(',')+']: ';
 	if(l.length!=2) {
 		throw flag+'Rule must be applied to two lines.';
 	}
@@ -142,7 +142,7 @@ function ckCNI(d,f,t,r,s,l,n) {
 
 // >E: Conditional Elimination
 function ckCNE(d,f,t,r,s,l,n) {
-	var flag = '[ERROR applying '+gRul(r)+' to lines '+l.join(',')+']: '
+	var flag = '[ERROR applying '+gRul(r)+' to lines '+l.join(',')+']: ';
 	if(l.length!=2) {
 		throw flag+'Rule must be applied to two lines.';
 	}
@@ -165,7 +165,7 @@ function ckCNE(d,f,t,r,s,l,n) {
 
 // ~I: Negation Introduction
 function ckNI(d,f,t,r,s,l,n) {
-	var flag = '[ERROR applying '+gRul(r)+' to lines '+l.join(',')+']: '
+	var flag = '[ERROR applying '+gRul(r)+' to lines '+l.join(',')+']: ';
 	if(l.length!=2) {
 		throw flag+'Rule must be applied to two lines.';
 	}
@@ -187,7 +187,7 @@ function ckNI(d,f,t,r,s,l,n) {
 
 // ~E: Negation Elimination
 function ckNE(d,f,t,r,s,l,n) {
-	var flag = '[ERROR applying '+gRul(r)+' to lines '+l.join(',')+']: '
+	var flag = '[ERROR applying '+gRul(r)+' to lines '+l.join(',')+']: ';
 	if(l.length!=2) {
 		throw flag+'Rule must be applied to two lines.';
 	}
@@ -207,7 +207,7 @@ function ckNE(d,f,t,r,s,l,n) {
 
 // DN: Double Negation Elimination
 function ckDN(d,f,t,r,s,l,n) {
-	var flag = '[ERROR applying DN to line '+l.join(',')+']: '
+	var flag = '[ERROR applying DN to line '+l.join(',')+']: ';
 	if(l.length!=1) {
 		throw flag+'Rule must be applied to one line.';
 	}
@@ -216,13 +216,52 @@ function ckDN(d,f,t,r,s,l,n) {
 	}
 	var a = dep[l[0]-1].join(',');
 	if(d.join(',')!=a) {
-		throw flag+'dependencies are wrong.  Remember: carry down the dependencies of the line the rule is applied to.';
+		throw flag+'Dependencies are wrong.  Remember: carry down the dependencies of the line the rule is applied to.';
+	}
+}
+
+
+// <>E: Biconditional Elimination
+function ckBCI(d,f,t,r,s,l,n) {
+	var flag = '[ERROR applying '+gRul(r)+' to line '+l+']: ';
+	if(l.length!=2) {
+		throw flag+'Rule must be applied to two lines.';
+	}
+	var t1=tr[l[0]-1]; // the parse tree of the formula on the first rule line
+	var t2=tr[l[1]-1]; // the parse tree of the formula on the second rule line
+	var x = match(parse('(A>B)'),t1);
+	var u = match(parse('(B>A)'),t2);
+	var v = match(parse('(A<>B)'),t);
+	var w = match(parse('(B<>A)'),t);
+	if(!x[0] || !u[0] || !v[0]) {throw flag+'The formulas on lines '+l[0]+' and '+l[1]+' must be conditionals, and the formula being derived must be a biconditional.';}
+	if(clash(x[1].concat(u[1]))) {throw flag+'The conditionals on lines '+l[0]+' and '+l[1]+' have to be converses of each other.';}
+	if(clash(x[1].concat(v[1])) && clash(x[1].concat(w[1]))) {throw flag+"The biconditional being derived doesn't match the conditionals on lines "+l[0]+' and '+l[1]+'.';}
+	var tmp = dep[l[0]-1].concat(dep[l[1]-1]);
+	tmp = sorted(rmDup(tmp));
+	var a = tmp.join(',');
+	if(d.join(',')!=a) {throw flag+'Dependencies are wrong.  Remember: carry down the dependencies of the lines the rule is applied to.';}
+}
+
+// <>E: Biconditional Elimination
+function ckBCE(d,f,t,r,s,l,n) {
+	var flag = '[ERROR applying '+gRul(r)+' to line '+l+']: ';
+	if(l.length!=1) {
+		throw flag+'Rule must be applied to one line.';
+	}
+	var tl=tr[l[0]-1]; // the parse tree of the formula on the line the rule is applied to
+	var x = match(parse('(A<>B)'),tl);
+	var u = match(parse('(A>B)'),t);
+	var v = match(parse('(B>A)'),t);
+	if(!x[0] || !u[0] || !v[0]) {throw 'The formula on line '+l[0]+' must be a biconditional, and the formula being derived must be a conditional.';}
+	if(clash(x[1].concat(u[1])) && clash(x[1].concat(v[1]))) {throw "The conditional being derived doesn't match the biconditional on line "+l[0]+'.';}
+	if(d.join(',')!=dep[l[0]-1].join(',')) {
+		throw flag+'Dependencies are wrong.  Remember: carry down the dependencies of the line the rule is applied to.';
 	}
 }
 
 // EFQ: Ex Falso Quodlibet
 function ckEFQ(d,f,t,r,s,l,n) {
-	var flag = '[ERROR applying EFQ to line '+l.join(',')+']: '
+	var flag = '[ERROR applying EFQ to line '+l.join(',')+']: ';
 	if(l.length!=1) {
 		throw flag+'Rule must be applied to one line.';
 	}
@@ -236,7 +275,7 @@ function ckEFQ(d,f,t,r,s,l,n) {
 
 // Df: to and from biconditionals
 function ckDf(d,f,t,r,s,l,n) {
-	var flag = '[ERROR applying Df to line '+l.join(',')+']: '
+	var flag = '[ERROR applying Df to line '+l.join(',')+']: ';
 	if(l.length!=1) {
 		throw flag+'Rule must be applied to one line.';
 	}

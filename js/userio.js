@@ -352,7 +352,6 @@ function import_proof() {
 	} // report error if no problem line found 
 	if(proof.length==0) {return errmess([1],'ERROR: proofs must begin with a problem line.  Something like "Problem: (P>Q), P \u22A2 Q"');}
 	try{var problem = get_problem(tmp[0]);} catch(err) {return errmess([1],err);} // extracts problem
-	try{problem[1] = check_goal(problem[1]);} catch(err) {return errmess([1],err);} // checks goal wff
 	insert_goal(problem[1]);
 	while(proof.length!=0 && (tmp[0].length==0 || (tmp[0][0]!=' ' && !isInt(tmp[0][0])))) { // consumes until proof starts
 		proof = tmp[1];
@@ -584,9 +583,12 @@ function get_problem(str) {
 	str = str.replace('\u22A2',','); // removes the vdash
 	str = str.replace(/ /g,''); // removes whitespace
 	str = str.split(','); // splits on commas
+	str = str.filter(function(x) {return x.length!=0;}); // removes empty elements (you get these if problem is a theorem)
 	var tmp = '';
 	for(var i=0;i<str.length;i++) { // checks if any of the formulas are ill formed
-		if(parse(str[i]).length==0) {throw "ERROR: the following premise in the Problem line is ill-formed: "+str[i]+". Make sure outermost parentheses are included.";}
+		if(parse(str[i]).length==0) {
+			throw "ERROR: the following formula in the Problem line is ill-formed: "+str[i]+". Make sure outermost parentheses are included.";
+		}
 	}
 	return [str.slice(0,str.length-1),str[str.length-1]];
 }
