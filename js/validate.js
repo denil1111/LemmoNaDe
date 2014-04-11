@@ -55,8 +55,10 @@ function ckRest(d,f,t,r,s,l,n) {
 	else if(r=='~I') {ckNI(d,f,t,r,s,l,n);}
 	else if(r=='~E') {ckNE(d,f,t,r,s,l,n);}
 	else if(r=='DN') {ckDN(d,f,t,r,s,l,n);}
-	else if(r=='EFQ') {ckEFQ(d,f,t,r,s,l,n);}
+	else if(r=='<>I') {ckBCI(d,f,t,r,s,l,n);}
+	else if(r=='<>E') {ckBCE(d,f,t,r,s,l,n);}
 	else if(r=='Df') {ckDf(d,f,t,r,s,l,n);}
+	else if(r=='EFQ') {ckEFQ(d,f,t,r,s,l,n);}
 	else if(r=='EI') {ckEI(d,f,t,r,s,l,n);}
 	else if(r=='EE') {ckEE(d,f,t,r,s,l,n);}
 	else if(r=='AI') {ckAI(d,f,t,r,s,l,n);}
