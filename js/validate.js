@@ -65,8 +65,12 @@ function ckRest(d,f,t,r,s,l,n) {
 	else if(r=='AE') {ckAE(d,f,t,r,s,l,n);}
 	else if(r=='=I') {ckIDI(d,f,t,r,s,l,n);}
 	else if(r=='=E') {ckIDE(d,f,t,r,s,l,n);}
+	else if(r=='SI(Com)') {ckCom(d,f,t,r,s,l,n);}
 	else if(r=='SI(QS)') {ckQS(d,f,t,r,s,l,n);}
 	else if(r=='SI(AV)') {ckAV(d,f,t,r,s,l,n);}
+	else if(r=='SI(SDN1)') {ckSDN1(d,f,t,r,s,l,n);}
+	else if(r=='SI(SDN2)') {ckSDN2(d,f,t,r,s,l,n);}
+	else if(r.indexOf('DeM')>0||r.indexOf('Imp')>0||r.indexOf('Dist')>0) {ckSIbi(d,f,t,r,s,l,n);}
 	else if(r.indexOf('SI')==0) {ckSI(d,f,t,r,s,l,n);}
 	else {throw "ERROR: The rule "+r+" you entered is not recognized.";}
 }
