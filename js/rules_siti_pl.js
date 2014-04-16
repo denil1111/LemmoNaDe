@@ -58,6 +58,106 @@ function ckSI(d,f,t,r,s,l,n) {
 	}
 }
 
+// Checks SI rules that involve equivalence (DeM, Imp, Neg-Imp, Dist) 
+function ckSIbi(d,f,t,r,s,l,n) {
+	var flag = '[ERROR applying '+gRul(r)+' to line '+l[0]+']: '
+	if(l.length!=1) {
+		throw flag+'The rule is being applied to an inappropriate number of lines.';
+	}
+	
+	var m1 = match(parse(s[0]),t); // tests if target formula matches first part of sequent
+	if(!m1[0]) {// if not
+		m1 = match(parse(s[1]),t); // match target formula to second part of sequent
+		var m2 = match(parse(s[0]),tr[l[0]-1]); // match source formula to first part of sequent
+	} else {var m2 = match(parse(s[1]),tr[l[0]-1]);} // if yes, match source formula to second part of sequent
+	if(!m1[0] || !m2[0]){nope();}
+	if(clash(m1[1].concat(m2[1]))) {nope();}
+	if(d.join(',')!=dep[l[0]-1].join(',')) {throw flag+'dependencies are wrong.'} 
+	function nope() {
+		throw flag+'The formula being derived does not follow by '+r+'.';
+	}
+}
+
+// Checks SI(Com)
+function ckCom(d,f,t,r,s,l,n) {
+	var flag = '[ERROR applying '+gRul(r)+' to line '+l[0]+']: ';	
+	if(l.length!=1){ 
+		throw flag+'The rule is being applied to an inappropriate number of lines.';
+	}
+	var cns = ['&','v','<>'];
+	var c1 = t[1]; // main binary connective
+	var c2 = tr[l[0]-1][1]; // main binary connective in formula on rule line
+	if(c1==undefined || c2==undefined || c1!=c2) {nope();}
+	if(cns.indexOf(c1)<0) {throw flag+c1+' is not a commutative connective.';}
+	var m1 = match(parse('(A'+c1+'B)'),t);
+	var m2 = match(parse('(B'+c1+'A)'),tr[l[0]-1]);
+	if(!m1[0] || !m2[0] || clash(m1[1].concat(m2[1]))) {nope();}
+	if(d.join(',')!=dep[l[0]-1].join(',')) {throw flag+'dependencies are wrong.'} 
+	function nope() {
+		throw flag+'The formula being derived does not follow by '+r+'.';
+	}
+}
+
+// Checks SI(SDN1) 
+// Note that this (arguably) implements a more lax version of the rule than one
+// might want.  E.g. it lets the user go directly from '~~AvB' to 'Av~~B', whereas
+// one might want to require an intermediate step of 'AvB' in this case.
+function ckSDN1(d,f,t,r,s,l,n) {
+	var flag = '[ERROR applying '+gRul(r)+' to line '+l[0]+']: ';
+	if(l.length!=1) {
+		throw flag+'The rule is being applied to an inappropriate number of lines.';
+	}
+	var c = t[1]; // main binary connective
+	var c2 = tr[l[0]-1][1]; // main binary connective in formula on rule line
+	if(c==undefined || c2==undefined || c!=c2) {nope();}
+	
+	var templates = ['(A'+c+'B)','(~~A'+c+'B)','(A'+c+'~~B)','(~~A'+c+'~~B)'];
+	var dmatch = get_match(templates,t); // will hold the match for the formula on the rule line
+	var fmatch = get_match(templates,tr[l[0]-1]); // will hold the match for the formula being derive
+	if(fmatch.length==0 || dmatch.length==0) {nope();}
+	if(clash(fmatch[1].concat(dmatch[1]))) {nope();}
+	
+	if(d.join(',')!=dep[l[0]-1].join(',')) {throw flag+'dependencies are wrong.';}
+	function nope() {
+		throw flag+'The formula being derived does not follow by '+r+'.';
+	}
+}
+
+// Checks SI(SDN2)
+// As with ckSDN1, arguably implements a more lax version of the rule
+function ckSDN2(d,f,t,r,s,l,n) {
+	var flag = '[ERROR applying '+gRul(r)+' to line '+l[0]+']: ';
+	if(l.length!=1) {
+		throw flag+'The rule is being applied to an inappropriate number of lines.';
+	}
+	var c = t[1][1]; // main binary connective
+	var c2 = tr[l[0]-1][1][1]; // main binary connective in formula on rule line
+	if(c==undefined || c2==undefined || c!=c2 || t[0]!='~' || tr[l[0]-1][0]!='~') {nope();}
+	
+	var templates = ['~(A'+c+'B)','~(~~A'+c+'B)','~(A'+c+'~~B)','~(~~A'+c+'~~B)'];
+	var dmatch = get_match(templates,t); // will hold the match for the formula on the rule line
+	var fmatch = get_match(templates,tr[l[0]-1]); // will hold the match for the formula being derive
+	if(fmatch.length==0 || dmatch.length==0) {nope();}
+	if(clash(fmatch[1].concat(dmatch[1]))) {nope();}
+	
+	if(d.join(',')!=dep[l[0]-1].join(',')) {throw flag+'dependencies are wrong.';}
+	function nope() {
+		throw flag+'The formula being derived does not follow by '+r+'.';
+	}
+}
+
+// Helper for ckSDN1 and ckSDN2.  Takes an array of templates and a tree and tries
+// matching the tree to each of the templates.  Returns the match() output if there
+// is a match and an empty array [] otherwise.
+function get_match(templates,tree) {
+	var m = [];
+	for(var i=0;i<templates.length;i++) {
+		var x = match(parse(templates[i]),tree);
+		if(x[0]) {m = x;}
+	}
+	return m;
+}
+
 // String -> [String]
 // Extracts the SI sequent (as an array) from the 'value' attribute of the selected 
 // rule (see the html <option> elements).  E.g. from 'SI(MT):(A>B),~B,~A' will return 

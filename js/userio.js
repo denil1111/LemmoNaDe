@@ -536,6 +536,8 @@ function clear_appt() {
 	document.getElementById('dep').value = '';
 	document.getElementById('frm').value = '';
 	document.getElementById('rul').value = 'Assumption';
+	document.getElementById('SI1').value = 'SI(DS1):(AvB),~A,B';
+	document.getElementById('SI1').style.display = 'none';
 	document.getElementById('lin').value = '';
 }
 
@@ -551,7 +553,9 @@ function clear_rept() {
 	document.getElementById('depr').value = '';
 	document.getElementById('frmr').value = '';
 	document.getElementById('linr').value = '';
-	document.getElementById('rulr').value = 'Assumption';	
+	document.getElementById('rulr').value = 'Assumption';
+	document.getElementById('SI2').value = 'SI(DS1):(AvB),~A,B';	
+	document.getElementById('SI2').style.display = 'none';
 }
 
 // clears all proof information stored in the globals
