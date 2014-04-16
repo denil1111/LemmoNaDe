@@ -76,8 +76,6 @@ function ckSIbi(d,f,t,r,s,l,n) {
 	function nope() {
 		throw flag+'The formula being derived does not follow by '+r+'.';
 	}
-	console.log(m1[1]);
-	console.log(m2[1]);
 }
 
 // Checks SI(Com)
