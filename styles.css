@@ -1,12 +1,11 @@
-html {
-height:auto;
-}
+/* proof constructor box */
 
 #box {
 min-height:570px;
 height:auto;
 }
 
+/* user menu items */
 
 #menut {
 border-collapse:collapse;
@@ -30,6 +29,9 @@ padding:10px;
 margin-bottom:10px;
 }
 
+/* things ending with 'm' are the menu tabs, things ending with 't' are the 
+associated tables (containing the content) */
+
 #appm {
 background:white;
 }
@@ -51,6 +53,8 @@ font-family:monospace;
 font-weight:normal;
 font-size:medium;
 }
+
+/* Things specifically for the "reference" menu option */
 
 #reft {
 border-collapse:collapse;
@@ -120,7 +124,10 @@ padding: 4px;
 margin:0px;
 }
 
-#outputtable {
+
+/* Output area */
+
+#outputtable { // contains the derivation cell and error cell
 height:100px;
 width:100%;
 border-collapse:collapse;
@@ -147,6 +154,8 @@ border:solid 1px #B4BAEA;
 background-color:#F0F4FF;
 }
 
+/* styling for the cells of the actual proof table */
+
 td.depc {
 min-width:60px;
 }
@@ -163,6 +172,8 @@ td.rulc {
 min-width:60px;
 }
 
+/* error console */
+
 #errord {
 padding:2px;
 min-height:100px;
@@ -170,6 +181,8 @@ font-family:monospace;
 border:solid 1px #B4BAEA;
 background-color:#F0F4FF;
 }
+
+/* footer */
 
 #footer {
 margin-left:auto;

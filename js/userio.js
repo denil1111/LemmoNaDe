@@ -1,21 +1,24 @@
-// LemmoNaDe
-// 
-// Copyright (C) 2014  Michael Rieppel <mrieppel at gmail dot com>
-// 
-// This program is free software; you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation; either version 2 of the License, or
-// (at your option) any later version.
-// 
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-// 
-// You should have received a copy of the GNU General Public License along
-// with this program; if not, write to the Free Software Foundation, Inc.,
-// 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+/**************************************************************@license
+LemmoNaDe
 
+Copyright (C) 2014  Michael Rieppel <mrieppel at gmail dot com>
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License along
+with this program; if not, write to the Free Software Foundation, Inc.,
+51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+************************************************************************/
+
+// To uglify: cat userio.js ui.js rules_ql.js rules_pl.js rules_siti_pl.js validate.js parsing.js | uglifyjs -mt  --comments > ug.js
 
 // ARRAYS TO HOLD VARIOUS ELEMENTS OF A PROOF LINE
 // ===============================================
@@ -197,7 +200,7 @@ function delete_goal() {
 // Loads a line for editing
 function load_line() {
 	var n = parseInt(document.getElementById('rl').value.replace(/ /g,''),10);
-	if(n>cnt.length || n<1) {
+	if(isNaN(n) || n>cnt.length || n<1) {
 		return errmess([1],'ERROR: There is no line number '+n+' in the proof.');
 	}
 	n = n-1;
