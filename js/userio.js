@@ -28,7 +28,6 @@ var cnt = []; // holds line counts as ints
 var frm = []; // holds formulas as strings
 var tr = []; // holds a parse tree of the formula
 var rul = []; // holds rules as strings
-var seq = []; // holds sequents in case of an SI rule
 var lin = []; // holds rule lines as int arrays
 var gls = []; // holds the goal formula(s) of the problem
 
@@ -51,12 +50,12 @@ function put_problem(premises,conclusion) {
 	}
 	for(var i=0;i<premises.length;i++) {
 		try{
-			var line = check_line((cnt.length+1).toString(),premises[i],parse(premises[i]),'Premise','','',cnt.length);
+			var line = check_line((cnt.length+1).toString(),premises[i],parse(premises[i]),'Premise','',cnt.length);
 		} catch(err) {
 			clearall();
 			throw 'ERROR: one of the premises is not well formed.';
 		}
-		append_line(line.d,line.f,line.t,line.r,line.s,line.l,line.n);
+		append_line(line.d,line.f,line.t,line.r,line.l,line.n);
 	}
 	insert_goal(goal);
 	errmess([0],'');
@@ -69,22 +68,19 @@ function get_line() {
 	var f = document.getElementById('frm').value.replace(/ /g,'');
 	var t = parse(f);
 	var r = document.getElementById('rul').value;
-	var s = [];
 	var l = document.getElementById('lin').value.replace(/ /g,'');
 	var n = cnt.length;
 	if(r=='SI/TI') {
 		r = document.getElementById('SI1').value;
-		s = getSeq(r);
-		r = getSeqHead(r);
 	}
-	try {var line = check_line(d,f,t,r,s,l,n);} catch(err) {return errmess([1],err);}
-	append_line(line.d,line.f,line.t,line.r,line.s,line.l,line.n);
+	try {var line = check_line(d,f,t,r,l,n);} catch(err) {return errmess([1],err);}
+	append_line(line.d,line.f,line.t,line.r,line.l,line.n);
 	errmess([0],'');
 }
 
 // Checks the syntax and rule application of the line, and returns the line information
 // as an object; note the n value should be the user value, not the zero offset value
-function check_line(d,f,t,r,s,l,n) {
+function check_line(d,f,t,r,l,n) {
 	if(t.length==0) {
 		f = '('+f+')';
 		t = parse(f);
@@ -92,17 +88,16 @@ function check_line(d,f,t,r,s,l,n) {
 	ckSyn(d,f,t,l);
 	d = sorted(rmDup(mkIntArr(d)));
 	l = mkIntArr(l);
-	ckRest(d,f,t,r,s,l,n);
-	return {'d':d,'f':f,'t':t,'r':r,'s':s,'l':l,'n':n}
+	ckRest(d,f,t,r,l,n);
+	return {'d':d,'f':f,'t':t,'r':r,'l':l,'n':n}
 }
 
 // Appends a new line to the proof
-function append_line(d,f,t,r,s,l,n) {
+function append_line(d,f,t,r,l,n) {
 	dep.push(d);
 	frm.push(f);
 	tr.push(t);
 	rul.push(r);
-	seq.push(s);
 	lin.push(l);
 	cnt.push(n+1);
 
@@ -127,7 +122,6 @@ function delete_previous() {
 		frm.pop();
 		tr.pop();
 		rul.pop();
-		seq.pop();
 		lin.pop();
 	}
 	if(cnt.length==0 && gls.length==0) {
@@ -169,7 +163,7 @@ function insert_goal(f) {
 		tdar[i].className = clar[i];
 	}
 	var t1 = document.createTextNode("Goal:");
-	var t2 = document.createTextNode(padBCs(richardify(f)));
+	var t2 = document.createTextNode(padBCs(f));
 	tdar[0].appendChild(t1);
 	tdar[2].appendChild(t2);
 	for(var i=0;i<4;i++) {
@@ -212,7 +206,7 @@ function load_line() {
 	if(rul[n].indexOf('SI')==0) {
 		document.getElementById('rulr').value = 'SI/TI';
 		document.getElementById('SI2').style.display = 'block';
-		document.getElementById('SI2').value = rul[n]+':'+seq[n].join(',');
+		document.getElementById('SI2').value = rul[n];
 	} else {
 		document.getElementById('rulr').value = rul[n];
 		document.getElementById('SI2').style.display = 'none';
@@ -228,26 +222,22 @@ function rep_line() {
 	var f = document.getElementById('frmr').value.replace(/ /g,'');
 	var t = parse(f);
 	var r = document.getElementById('rulr').value;
-	var s = [];
 	var l = document.getElementById('linr').value.replace(/ /g,'');
 	
 	if(n>cnt.length || n<1) {
 		errmess([1],'ERROR: No line number ' + n.toString() + ' to replace');
 	}
 	if(r=='SI/TI') {
-		r = document.getElementById('SI1').value;
-		s = getSeq(r);
-		r = getSeqHead(r);
+		r = document.getElementById('SI2').value;
 	}
 	n -= 1;
-	try{var line = check_line(d,f,t,r,s,l,n);} catch(err) {
+	try{var line = check_line(d,f,t,r,l,n);} catch(err) {
 		return errmess([1,n+1],'There is a problem with the replacement for line '+(n+1)+' you entered.  The error message concerning it is:<br /><br />'+err);
 	}
 	dep[n]=line.d;
 	frm[n]=line.f;
 	tr[n]=line.t;
 	rul[n]=line.r;
-	seq[n]=lin.s;
 	lin[n]=line.l;
 	
 	var table = document.getElementById('drvt');
@@ -255,7 +245,7 @@ function rep_line() {
 	table.removeChild(table.childNodes[n]);
 	table.insertBefore(row,table.childNodes[n]);
 	for(var i=(n+1);i<cnt.length;i++) {
-		try {ckRest(dep[i],frm[i],tr[i],rul[i],seq[i],lin[i],i);} catch(err) {
+		try {ckRest(dep[i],frm[i],tr[i],rul[i],lin[i],i);} catch(err) {
 			return errmess([1,(i+1)],'There is a problem with proof line '+(i+1)+'.  The error message concerning it is:<br /><br />'+err);
 		}
 	}
@@ -339,16 +329,15 @@ function import_proof() {
 	clearall(); // clear the globals
 	document.getElementById('drvt').innerHTML = '';
 	document.getElementById('goalt').innerHTML = '';
-	var cols = [dep,cnt,frm,tr,rul,seq,lin];
+	var cols = [dep,cnt,frm,tr,rul,lin];
 	var tmp = next_line(proof);
 	var line = [];
 	var d = '';
-	var n ='';
 	var f = '';
 	var t = [];
-	var l = '';
 	var r = '';
-	var s = '';
+	var l = '';
+	var n ='';
 	while(tmp[0].indexOf('Problem: ')!=0 && proof.length!=0) { // consumes until problem line
 		proof = tmp[1];
 		tmp = next_line(proof);
@@ -373,9 +362,8 @@ function import_proof() {
 			f = line[2];
 			r = line[4];
 			t = parse(f);
-			try{s = doSI(r);} catch(e) {return nope();}
 			l = line[3];
-		} else {
+		} else if(line.length==4) {
 			var f = 0;
 			for(var i=0;i<line.length;i++) {
 				if(parse(line[i]).length!=0) {
@@ -383,14 +371,12 @@ function import_proof() {
 					break;
 				}
 			}
-			if(f==0) {return nope();}
 			if(f==1) { // line has no dependencies: 0cnt 1frm 2lin 3rul
 				d = '';
 				n = parseInt(line[0].substring(1,line[0].length-1),10);
 				f = line[1];
 				r = line[3];
 				t = parse(f);
-				try{s = doSI(r);} catch(e) {return nope();}
 				l = line[2];
 			} else if(f==2) { // line has no rule lines (Premise or Assumption): 0dep 1cnt 2frm 3rul
 				d = line[0];
@@ -398,13 +384,19 @@ function import_proof() {
 				f = line[2];
 				r = line[3];
 				t = parse(f);
-				try{s = doSI(r);} catch(e) {return nope();}
 				l = '';
 			} else {return nope();}
-		}
-		try {var pline = check_line(d,f,t,r,s,l,n-1);} catch(err) {return errmess([1],"ERROR: There is a problem with line "+n+" in the proof you are attempting to import.  The error message concerning it is:<br/><br/>"+err);}
+		} else if(line.length==3) { // TI line: 0cnt 1frm 2rul
+			d = '';
+			n = parseInt(line[0].substring(1,line[1].length-1),10);
+			f = line[1];
+			t = parse(f);
+			r = line[2];
+			l = '';
+		} else {return nope();}
+		try {var pline = check_line(d,f,t,r,l,n-1);} catch(err) {return errmess([1],"ERROR: There is a problem with line "+n+" in the proof you are attempting to import.  The error message concerning it is:<br/><br/>"+err);}
 		if(pline.r=='Premise' && problem[0].indexOf(pline.f)<0) {return errmess([1],"ERROR: Your proof contains the following formula as a premise on line "+(pline.n+1)+": "+f+". This is not among the premises in the problem you entered.  Problem is:<br/>"+problem[0].join(',')+ " \u22A2 "+problem[1]);}
-		append_line(pline.d,pline.f,pline.t,pline.r,pline.s,pline.l,pline.n);
+		append_line(pline.d,pline.f,pline.t,pline.r,pline.l,pline.n);
 		errmess([0],'');
 	}
 	check_proof();
@@ -425,16 +417,6 @@ function import_proof() {
 			if(x[i]!=' ') {hascontent = true;}
 		}
 		return hascontent;
-	}
-	function doSI(r) {
-		if(r.indexOf('SI')!=0) {return '';}
-		var SIs = document.getElementById('SI1').childNodes;
-		for(var i=1;i<SIs.length;i++) {
-			if(i%2==0) {continue;} // NOTE: need this because 0 and even elements of the childNodes of a <select> are #text, which have no value
-			if(SIs[i].value.indexOf(r)==0) {
-				return getSeq(SIs[i].value);
-			}
-		}
 	}
 	function writeProof() {
 		var table = document.getElementById('drvt');
@@ -464,7 +446,7 @@ function check_proof() {
 	if(cnt.length==0) {return errmess([1],'ERROR: No proof to check');}
 	for(var i=0;i<cnt.length;i++) {
 		try {
-			ckRest(dep[i],frm[i],tr[i],rul[i],seq[i],lin[i],i);
+			ckRest(dep[i],frm[i],tr[i],rul[i],lin[i],i);
 		} catch(err) {
 			return errmess([1,(i+1)],'There is a problem with proof line '+(i+1)+'.  The error message concerning it is:<br /><br />'+err);
 		}
@@ -496,8 +478,8 @@ function mkRow(j) {
 	
 	txar[0] = document.createTextNode(dep[j].join(','));
 	txar[1] = document.createTextNode('('+cnt[j]+')');
-	txar[2] = document.createTextNode(padBCs(richardify(frm[j])));
-	txar[3] = document.createTextNode(lin[j].join(',')+'  '+gRul(rul[j]));
+	txar[2] = document.createTextNode(padBCs(frm[j]));
+	txar[3] = document.createTextNode(lin[j].join(',')+'  '+rul[j]);
 	
 	
 	for(var i=0;i<4;i++) {
@@ -539,7 +521,7 @@ function clear_appt() {
 	document.getElementById('dep').value = '';
 	document.getElementById('frm').value = '';
 	document.getElementById('rul').value = 'Assumption';
-	document.getElementById('SI1').value = 'SI(DS1):(AvB),~A,B';
+	document.getElementById('SI1').value = 'SI(DS1)';
 	document.getElementById('SI1').style.display = 'none';
 	document.getElementById('lin').value = '';
 }
@@ -557,7 +539,7 @@ function clear_rept() {
 	document.getElementById('frmr').value = '';
 	document.getElementById('linr').value = '';
 	document.getElementById('rulr').value = 'Assumption';
-	document.getElementById('SI2').value = 'SI(DS1):(AvB),~A,B';	
+	document.getElementById('SI2').value = 'SI(DS1)';	
 	document.getElementById('SI2').style.display = 'none';
 }
 
@@ -568,7 +550,6 @@ function clearall() {
 	frm = [];
 	tr = [];
 	rul = [];
-	seq = [];
 	lin = [];
 	gls = [];
 }
@@ -586,13 +567,13 @@ function get_premises() {
 // returns a two element array: first element an array of premises, second the 
 // conclusion string
 function get_problem(str) {
-	str = str.replace('Problem: ',''); // removes the 'Problem: ' part
-	str = str.replace('\u22A2',','); // removes the vdash
-	str = str.replace(/ /g,''); // removes whitespace
-	str = str.split(','); // splits on commas
-	str = str.filter(function(x) {return x.length!=0;}); // removes empty elements (you get these if problem is a theorem)
+	str = str.replace('Problem: ',''); // remove the 'Problem: ' part
+	str = str.replace('\u22A2',','); // remove the vdash
+	str = str.replace(/ /g,''); // remove whitespace
+	str = str.split(','); // split on commas
+	str = str.filter(function(x) {return x.length!=0;}); // remove empty elements (you get these if problem is a theorem)
 	var tmp = '';
-	for(var i=0;i<str.length;i++) { // checks if any of the formulas are ill formed
+	for(var i=0;i<str.length;i++) { // check if any of the formulas are ill formed
 		if(parse(str[i]).length==0) {
 			throw "ERROR: the following formula in the Problem line is ill-formed: "+str[i]+". Make sure outermost parentheses are included.";
 		}

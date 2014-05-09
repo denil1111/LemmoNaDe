@@ -13,12 +13,13 @@ Problem: (P > (Q & R)), P ⊢ R
 1,2  (3)  (Q & R)          1,2  >E
 1,2  (4)  R                3  &E
 
+
 Problem: (P > (~Q v R)), P ⊢ (Q>R)
 
 1    (1)  (P > (~Q v R))    Premise
 2    (2)  P                 Premise
 1,2  (3)  (~Q v R)          1,2  >E
-1,2  (4)  (Q > R)           3  SI(Imp2)
+1,2  (4)  (Q > R)           3  SI(Imp)
 
 
 Problem: (P > (~Q v R)), P ⊢ (Q>R)
@@ -51,6 +52,5 @@ Problem: (Ax)(Fx > Gx), Fa ⊢ (Ex)(~Gx > Hx)
 1,2,3  (9)   Ha                8  DN
 1,2    (10)  (~Ga > Ha)        3,9  >I
 1,2    (11)  (Ex)(~Gx > Hx)    10  EI
-
 </pre>
 </body>

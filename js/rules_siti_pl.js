@@ -22,7 +22,8 @@
 
 // Main SI/TI checking function
 function ckSI(d,f,t,r,s,l,n) {
-	var flag = '[ERROR applying '+gRul(r)+' to line(s) '+l.join(',')+']: '
+	var flag = '[ERROR applying '+gRul(r)+' to line(s) '+l.join(',')+']: ';
+	if(s.length==0) { throw flag+'The rule is not recognized.';}
 	if(l.length!=(s.length-1)) {
 		throw flag+'The rule is being applied to an inappropriate number of lines.';
 	}
@@ -60,7 +61,8 @@ function ckSI(d,f,t,r,s,l,n) {
 
 // Checks SI rules that involve equivalence (DeM, Imp, Neg-Imp, Dist) 
 function ckSIbi(d,f,t,r,s,l,n) {
-	var flag = '[ERROR applying '+gRul(r)+' to line '+l[0]+']: '
+	var flag = '[ERROR applying '+gRul(r)+' to line '+l[0]+']: ';
+	if(s.length==0) { throw flag+'The rule is not recognized.';}
 	if(l.length!=1) {
 		throw flag+'The rule is being applied to an inappropriate number of lines.';
 	}
@@ -158,31 +160,6 @@ function get_match(templates,tree) {
 	return m;
 }
 
-// String -> [String]
-// Extracts the SI sequent (as an array) from the 'value' attribute of the selected 
-// rule (see the html <option> elements).  E.g. from 'SI(MT):(A>B),~B,~A' will return 
-// ['(A>B)','~B','~A']
-function getSeq(s) {
-	var o = '';
-	var i = 0;
-	if(s.indexOf(':')<0) {return [];}
-	while(s[i]!=':') {i++;}
-	o = s.substr(i+1);
-	o = o.replace(/ /g,'');
-	return o.split(',');
-}
-
-// String -> String
-// Extracts the SI rule name (as string) from the 'value' attribute of the selected
-// rule.  E.g. from 'SI(MT):(A>B),~B,~A' will return 'SI(MT)'.
-function getSeqHead(s) {
-	var o = '';
-	var i = 0;
-	if(s.indexOf(':')<0) {return s;}
-	while(s[i]!=':') {i++;}
-	return s.substr(0,i);
-}
-
 // (Tree,Tree) -> [Boolean,Dictionary]
 // Takes two trees,t1 and t2, where t1 is a "template" and t2 is to be matched
 // against that template.  Returns an array with the first element 'true' if
@@ -225,4 +202,25 @@ function clash(ar) {
 		}
 	}
 	return clash(ar);
+}
+
+function get_seq(r) {
+	switch(r) {
+		case 'SI(DS1)' : return '(AvB),~A,B'.split(',');
+		case 'SI(DS2)' : return '(AvB),~B,A'.split(',');
+		case 'SI(MT)' : return '(A>B),~B,~A'.split(',');
+		case 'SI(PMI1)' : return 'A,(B>A)'.split(',');
+		case 'SI(PMI2)' : return '~A,(A>B)'.split(',');
+		case 'SI(DN+)' : return 'A,~~A'.split(',');
+		case 'SI(DeM1)' : return '~(A&B),(~Av~B)'.split(',');
+		case 'SI(DeM2)' : return '~(AvB),(~A&~B)'.split(',');
+		case 'SI(DeM3)' : return '~(~Av~B),(A&B)'.split(',');
+		case 'SI(DeM4)' : return '~(~A&~B),(AvB)'.split(',');
+		case 'SI(Imp)' : return '(A>B),(~AvB)'.split(',');
+		case 'SI(NegImp)' : return '~(A>B),(A&~B)'.split(',');
+		case 'SI(Dist1)' : return '(A&(BvC)),((A&B)v(A&C))'.split(',');
+		case 'SI(Dist2)' : return '(Av(B&C)),((AvB)&(AvC))'.split(',');
+		case 'SI(LEM)' : return '(Av~A)'.split(',');
+		default : return [];
+	}
 }

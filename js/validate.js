@@ -40,11 +40,12 @@ function ckSyn(d,f,t,l) {
 
 // Takes the user input and dispatches it to the appropriate rule checking function.
 // n is the number of the proof line (starting with 0, not 1)
-function ckRest(d,f,t,r,s,l,n) {
+function ckRest(d,f,t,r,l,n) {
 	var x = 0;
 	if((x = oob(l,n))>0) {
 		throw 'ERROR: Rule line '+x+ ' is out of bounds. Rules must be applied to preceding lines.';
 	}
+	s = get_seq(r);
 	if(r=='Premise' || r=='Assumption') {ckPA(d,f,t,r,s,l,n);}
 	else if(r=='&I') {ckCJI(d,f,t,r,s,l,n);}
 	else if(r=='&E') {ckCJE(d,f,t,r,s,l,n);}
