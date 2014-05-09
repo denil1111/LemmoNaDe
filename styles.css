@@ -157,20 +157,17 @@ background-color:#F0F4FF;
 /* styling for the cells of the actual proof table */
 
 td.depc {
-min-width:60px;
+padding-right:20px;
 }
 
 td.cntc {
-min-width:40px;
+padding-right:5px;
 }
 
 td.frmc {
-min-width:150px;
+padding-right:30px;
 }
 
-td.rulc {
-min-width:60px;
-}
 
 /* error console */
 
