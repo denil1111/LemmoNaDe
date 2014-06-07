@@ -44,6 +44,7 @@ function get_userproblem() {
 }
 
 function put_problem(premises,conclusion) {
+	var p_lines = [];
 	try{var goal = check_goal(conclusion);} catch(err) {
 		clearall();
 		throw 'ERROR: conclusion is not well formed.';
@@ -51,11 +52,13 @@ function put_problem(premises,conclusion) {
 	for(var i=0;i<premises.length;i++) {
 		try{
 			var line = check_line((cnt.length+1).toString(),premises[i],parse(premises[i]),'Premise','',cnt.length);
+			p_lines.push(line);
 		} catch(err) {
-			clearall();
 			throw 'ERROR: one of the premises is not well formed.';
 		}
-		append_line(line.d,line.f,line.t,line.r,line.l,line.n);
+	}
+	for(var i=0;i<p_lines.length;i++) {
+		append_line(p_lines[i].d,p_lines[i].f,p_lines[i].t,p_lines[i].r,p_lines[i].l,p_lines[i].n);
 	}
 	insert_goal(goal);
 	errmess([0],'');
