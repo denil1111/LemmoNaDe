@@ -168,14 +168,14 @@ function isT(c) {
 // Char -> Bool
 // Determines if c is a variable.  NOTE: /[a-z]/.test(undefined) gives true!!!
 function isV(c) {
-	var cn = 'abcdefghijklmnopqrstuvwxyz';
+	var cn = 'abcdefghijklmnopqrstuwxyz';
 	return cn.indexOf(c)>=0;
 }
 
 // Char -> Bool
 // Determines if c is a constant
 function isC(c) {
-	var cn = 'abcdefghijklmnopqrstuvwxyz';
+	var cn = 'abcdefghijklmnopqrstuwxyz';
 	return cn.indexOf(c)>=0;
 }
 
