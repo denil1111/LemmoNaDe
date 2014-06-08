@@ -51,7 +51,7 @@ function put_problem(premises,conclusion) {
 	}
 	for(var i=0;i<premises.length;i++) {
 		try{
-			var line = check_line((cnt.length+1).toString(),premises[i],parse(premises[i]),'Premise','',cnt.length);
+			var line = check_line((i+1).toString(),premises[i],parse(premises[i]),'Premise','',i);
 			p_lines.push(line);
 		} catch(err) {
 			throw 'ERROR: one of the premises is not well formed.';
