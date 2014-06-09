@@ -166,7 +166,7 @@ function insert_goal(f) {
 		tdar[i].className = clar[i];
 	}
 	var t1 = document.createTextNode("Goal:");
-	var t2 = document.createTextNode(padBCs(f));
+	var t2 = document.createTextNode(padBC(f));
 	tdar[0].appendChild(t1);
 	tdar[2].appendChild(t2);
 	for(var i=0;i<4;i++) {
@@ -264,13 +264,13 @@ function export_proof() {
 	var latex = document.getElementById('latex').checked;
 	var odep = dep.map(function(a) {return a.join(',');}); 
 	var ocnt = cnt.map(function(a) {return '('+a.toString()+')';});
-	var ofrm = plain ? frm.map(padBCs) : '';
-	ofrm = pretty ? frm.map(function(a) {return padBCs(richardify(a));}) : ofrm;
+	var ofrm = plain ? frm.map(padBC) : '';
+	ofrm = pretty ? frm.map(function(a) {return padBC2(richardify(a));}) : ofrm;
 	ofrm = latex ? frm.map(function(a) {return latexify(richardify(a));}) : ofrm;
 	var orul = (pretty || latex) ? rul.map(gRul) : rul.slice(0);
 	var olin = lin.map(function(a) {return a.join(',');});
-	var ogl = plain ? padBCs(gls[0]) : '';
-	ogl = pretty ? (function(a) {return padBCs(richardify(a));})(gls[0]) : ogl;
+	var ogl = plain ? padBC(gls[0]) : '';
+	ogl = pretty ? (function(a) {return padBC2(richardify(a));})(gls[0]) : ogl;
 	ogl = latex ? (function(a) {return latexify(richardify(a));})(gls[0]) : ogl;
 	var pre = '';
 	var proof = '';
@@ -481,7 +481,7 @@ function mkRow(j) {
 	
 	txar[0] = document.createTextNode(dep[j].join(','));
 	txar[1] = document.createTextNode('('+cnt[j]+')');
-	txar[2] = document.createTextNode(padBCs(frm[j]));
+	txar[2] = document.createTextNode(padBC(frm[j]));
 	txar[3] = document.createTextNode(lin[j].join(',')+'  '+rul[j]);
 	
 	

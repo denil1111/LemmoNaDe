@@ -258,7 +258,8 @@ function utox(c) {
 	}
 }
 
-function padBCs(str) {
+// pads out binary connectives in a "plain" formula
+function padBC(str) {
 	var out = '';
 	var b = 0;
 	for(var i=0;i<str.length;i++) {
@@ -269,6 +270,18 @@ function padBCs(str) {
 			out = out+' '+str[i]+str[i+1]+' ';
 			i = i+1;
 		} else {out = out+str[i];}
+	}
+	return out;
+}
+
+// pads out binary connectives in a unicode formula
+function padBC2(s) {
+	var bc = ['\u2228','\u2192','\u2194','&'];
+	var out = '';
+	for(var i=0;i<s.length;i++) {
+		if(bc.indexOf(s[i])>=0) {
+			out += ' '+s[i]+' ';
+		} else {out += s[i];}
 	}
 	return out;
 }
