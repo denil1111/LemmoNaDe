@@ -55,7 +55,11 @@ function ckSI(d,f,t,r,s,l,n) {
 		if(d.join(',')!=a.join(',')) {throw flag+'dependencies are wrong.';}
 	}
 	function nope() {
-		throw flag+'The formula being derived does not follow by '+r+'.';
+		if(['SI(DS1)','SI(DS2)','SI(MT)',].indexOf(r)>=0) {
+			throw flag+'The formula being derived does not follow by '+r+'.  Perhaps check that the two lines the rule is applied to are listed in the right order.';
+		} else {
+			throw flag+'The formula being derived does not follow by '+r+'.';
+		}
 	}
 }
 
