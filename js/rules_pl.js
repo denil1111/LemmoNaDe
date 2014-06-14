@@ -105,10 +105,14 @@ function ckDJE(d,f,t,r,s,l,n) {
 		throw flag+'The third and fifth rule lines must match the formula being derived.';
 	}
 
-	var a = dep[l[0]-1].concat(dep[l[2]-1],dep[l[4]-1]);
+	var d1 = dep[l[0]-1].slice(0);
+	var d2 = dep[l[2]-1].slice(0);
+	var d3 = dep[l[4]-1].slice(0);
+	if(d2.indexOf(l[1])>=0) {d2.splice(d2.indexOf(l[1]),1);}
+	if(d3.indexOf(l[3])>=0) {d3.splice(d3.indexOf(l[3]),1);}
+	
+	var a = d1.concat(d2,d3);
 	a = rmDup(a);
-	if(a.indexOf(l[1])>=0) {a.splice(a.indexOf(l[1]),1);}
-	if(a.indexOf(l[3])>=0) {a.splice(a.indexOf(l[3]),1);}
 	a = sorted(a);
 	if(d.join(',')!=a.join(',')) {
 		throw flag+'dependencies are wrong.  Remember: carry down the dependencies of the original disjunction and the two conclusion lines, and then remove the line numbers of the two vE assumptions.';
