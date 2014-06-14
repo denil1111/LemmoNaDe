@@ -115,7 +115,7 @@ function ckDJE(d,f,t,r,s,l,n) {
 	a = rmDup(a);
 	a = sorted(a);
 	if(d.join(',')!=a.join(',')) {
-		throw flag+'dependencies are wrong.  Remember: carry down the dependencies of the original disjunction and the two conclusion lines, and then remove the line numbers of the two vE assumptions.';
+		throw flag+"dependencies are wrong.  Remember: take the dependencies of each conclusion line, discharging the relevant vE assumption, and then combine that with the dependencies of the original disjunction.";
 	}
 }
 
