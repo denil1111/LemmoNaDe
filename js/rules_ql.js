@@ -69,12 +69,13 @@ function ckEE(d,f,t,r,s,l,n) {
 	if(freevars.indexOf(iv)>=0) {
 		throw flag+'Generalizability Failure.  The constant \''+iv+'\' used in creating the instance on line '+(ass+1)+' occurs in either (i) the original existential on line '+(ex+1)+', or (ii) the formula on line '+(cl+1)+' or (iii) one of the dependencies of line '+(cl+1)+' (other than '+(ass+1)+').';
 	}
-	var a = dep[ex].concat(dep[cl]);
-	a = rmDup(a);
+	var a = dep[cl].slice(0);
 	if(a.indexOf(ass+1)>=0) {a.splice(a.indexOf(ass+1),1);}
+	a = a.concat(dep[ex]);
+	a = rmDup(a);
 	a = sorted(a);
 	if(d.join(',')!=a.join(',')) {
-		throw flag+'dependencies are wrong.  Remember: carry down the dependencies of the first and third rule lines, an eliminate the the number of the assumption on the second rule line.';
+		throw flag+'dependencies are wrong.  Remember: take the dependencies of the third rule line, discharge the assumption, and then combine that with the dependencies of the existential on the first rule line.';
 	}	
 }
 
